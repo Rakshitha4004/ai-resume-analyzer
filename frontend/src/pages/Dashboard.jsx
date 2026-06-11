@@ -1,17 +1,10 @@
 import Navbar from "../components/Navbar";
+import { Link } from "react-router-dom";
 
 function Dashboard() {
-  const isLoggedIn = localStorage.getItem("loggedIn");
-
-  if (!isLoggedIn) {
-    return (
-      <h1 className="text-center mt-20 text-3xl">
-        Please Login First
-      </h1>
-    );
-  }
-
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = JSON.parse(
+    localStorage.getItem("user") || "{}"
+  );
 
   const totalResumes =
     localStorage.getItem("totalResumes") || 0;
@@ -21,6 +14,11 @@ function Dashboard() {
 
   const atsScore =
     localStorage.getItem("atsScore") || 0;
+
+  const analyses =
+    JSON.parse(
+      localStorage.getItem("analyses")
+    ) || [];
 
   const handleLogout = () => {
     localStorage.removeItem("loggedIn");
@@ -33,7 +31,6 @@ function Dashboard() {
 
       <div className="min-h-screen bg-gray-100 p-8">
 
-        {/* Header */}
         <div className="flex justify-between items-center mb-8">
 
           <div>
@@ -48,44 +45,42 @@ function Dashboard() {
 
           <button
             onClick={handleLogout}
-            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+            className="bg-red-500 text-white px-4 py-2 rounded-lg"
           >
             Logout
           </button>
 
         </div>
 
-        {/* Action Buttons */}
         <div className="flex gap-4 mb-8">
 
-          <a
-            href="/upload"
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
+          <Link
+            to="/upload"
+            className="bg-blue-600 text-white px-6 py-3 rounded-lg"
           >
             Upload Resume
-          </a>
+          </Link>
 
-          <a
-            href="/report"
-            className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700"
+          <Link
+            to="/report"
+            className="bg-green-600 text-white px-6 py-3 rounded-lg"
           >
             View Report
-          </a>
+          </Link>
 
         </div>
 
-        {/* User Profile */}
         <div className="bg-white p-6 rounded-xl shadow mb-8">
 
           <h2 className="text-2xl font-bold mb-4">
             User Profile
           </h2>
 
-          <p className="mb-2">
+          <p>
             <strong>Name:</strong> {user?.name}
           </p>
 
-          <p className="mb-2">
+          <p>
             <strong>Email:</strong> {user?.email}
           </p>
 
@@ -95,7 +90,6 @@ function Dashboard() {
 
         </div>
 
-        {/* Stats Cards */}
         <div className="grid md:grid-cols-3 gap-6">
 
           <div className="bg-white p-6 rounded-xl shadow">
@@ -120,7 +114,7 @@ function Dashboard() {
 
           <div className="bg-white p-6 rounded-xl shadow">
             <h2 className="text-xl font-semibold">
-              Average ATS Score
+              Latest ATS Score
             </h2>
 
             <p className="text-3xl mt-4 text-purple-600">
@@ -130,24 +124,37 @@ function Dashboard() {
 
         </div>
 
-        {/* Recent Analysis */}
         <div className="bg-white p-6 rounded-xl shadow mt-8">
 
           <h2 className="text-2xl font-bold mb-4">
-            Recent Analysis
+            Resume History
           </h2>
 
-          <p className="mb-2">
-            Resume.pdf
-          </p>
+          {analyses.length === 0 ? (
+            <p>No resumes analyzed yet.</p>
+          ) : (
+            analyses.map((analysis, index) => (
+              <div
+                key={index}
+                className="border-b py-3"
+              >
+                <p>
+                  <strong>Resume:</strong>{" "}
+                  {analysis.resumeName}
+                </p>
 
-          <p className="mb-2">
-            ATS Score: {atsScore}
-          </p>
+                <p>
+                  <strong>ATS Score:</strong>{" "}
+                  {analysis.atsScore}
+                </p>
 
-          <p>
-            Status: Completed
-          </p>
+                <p>
+                  <strong>Date:</strong>{" "}
+                  {analysis.date}
+                </p>
+              </div>
+            ))
+          )}
 
         </div>
 

@@ -21,10 +21,46 @@ function UploadResume() {
     setLoading(true);
 
     setTimeout(() => {
-      // Save data locally
-      localStorage.setItem("totalResumes", "1");
-      localStorage.setItem("analysisCount", "1");
-      localStorage.setItem("atsScore", "78");
+      const randomScore =
+        Math.floor(Math.random() * 31) + 70;
+
+      const previousAnalyses =
+        JSON.parse(
+          localStorage.getItem("analyses")
+        ) || [];
+
+      const newAnalysis = {
+        resumeName: file.name,
+        atsScore: randomScore,
+        date: new Date().toLocaleDateString(),
+      };
+
+      previousAnalyses.push(newAnalysis);
+
+      localStorage.setItem(
+        "analyses",
+        JSON.stringify(previousAnalyses)
+      );
+
+      localStorage.setItem(
+        "totalResumes",
+        previousAnalyses.length
+      );
+
+      localStorage.setItem(
+        "analysisCount",
+        previousAnalyses.length
+      );
+
+      localStorage.setItem(
+        "atsScore",
+        randomScore
+      );
+
+      localStorage.setItem(
+        "resumeName",
+        file.name
+      );
 
       setLoading(false);
 
@@ -60,7 +96,9 @@ function UploadResume() {
             onClick={handleAnalyze}
             className="mt-6 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
           >
-            {loading ? "Analyzing..." : "Analyze Resume"}
+            {loading
+              ? "Analyzing..."
+              : "Analyze Resume"}
           </button>
 
         </div>
