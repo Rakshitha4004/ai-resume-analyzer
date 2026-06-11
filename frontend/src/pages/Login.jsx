@@ -1,15 +1,11 @@
+import Navbar from "../components/Navbar";
+
 function Login() {
   return (
-    <div>
-      <h2>Login</h2>
-      <input type="email" placeholder="Email" />
-      <br />
-      <br />
-      <input type="password" placeholder="Password" />
-      <br />
-      <br />
-      <button>Login</button>
-    </div>
+    <>
+      <Navbar />
+      <h1>Login Page</h1>
+    </>
   );
 }
 
