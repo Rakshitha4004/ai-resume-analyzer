@@ -1,23 +1,34 @@
 import Navbar from "../components/Navbar";
 
 function Dashboard() {
+  const totalResumes =
+    localStorage.getItem("totalResumes") || 0;
+
+  const analysisCount =
+    localStorage.getItem("analysisCount") || 0;
+
+  const atsScore =
+    localStorage.getItem("atsScore") || 0;
+
   return (
     <>
       <Navbar />
 
       <div className="min-h-screen bg-gray-100 p-8">
+
         <h1 className="text-4xl font-bold mb-8">
           Dashboard
         </h1>
 
         <div className="grid md:grid-cols-3 gap-6">
+
           <div className="bg-white p-6 rounded-xl shadow">
             <h2 className="text-xl font-semibold">
               Total Resumes
             </h2>
 
             <p className="text-3xl mt-4 text-blue-600">
-              0
+              {totalResumes}
             </p>
           </div>
 
@@ -27,7 +38,7 @@ function Dashboard() {
             </h2>
 
             <p className="text-3xl mt-4 text-green-600">
-              0
+              {analysisCount}
             </p>
           </div>
 
@@ -37,10 +48,12 @@ function Dashboard() {
             </h2>
 
             <p className="text-3xl mt-4 text-purple-600">
-              0
+              {atsScore}
             </p>
           </div>
+
         </div>
+
       </div>
     </>
   );
