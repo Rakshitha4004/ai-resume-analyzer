@@ -8,27 +8,16 @@ function Navbar() {
       </h2>
 
       <div className="space-x-6">
-        <Link
-          to="/"
-          className="text-gray-700 hover:text-blue-600"
-        >
-          Home
-        </Link>
+  <Link to="/">Home</Link>
 
-        <Link
-          to="/login"
-          className="text-gray-700 hover:text-blue-600"
-        >
-          Login
-        </Link>
+  <Link to="/dashboard">Dashboard</Link>
 
-        <Link
-          to="/register"
-          className="text-gray-700 hover:text-blue-600"
-        >
-          Register
-        </Link>
-      </div>
+  <Link to="/upload">Upload</Link>
+
+  <Link to="/login">Login</Link>
+
+  <Link to="/register">Register</Link>
+</div>
     </nav>
   );
 }
