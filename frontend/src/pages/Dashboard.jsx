@@ -1,6 +1,20 @@
 import Navbar from "../components/Navbar";
 
 function Dashboard() {
+  const isLoggedIn =
+    localStorage.getItem("loggedIn");
+
+  if (!isLoggedIn) {
+    return (
+      <h1 className="text-center mt-20 text-3xl">
+        Please Login First
+      </h1>
+    );
+  }
+
+  const user =
+    JSON.parse(localStorage.getItem("user"));
+
   const totalResumes =
     localStorage.getItem("totalResumes") || 0;
 
@@ -10,15 +24,36 @@ function Dashboard() {
   const atsScore =
     localStorage.getItem("atsScore") || 0;
 
+  const handleLogout = () => {
+    localStorage.removeItem("loggedIn");
+
+    window.location.href = "/login";
+  };
+
   return (
     <>
       <Navbar />
 
       <div className="min-h-screen bg-gray-100 p-8">
 
-        <h1 className="text-4xl font-bold mb-8">
-          Dashboard
-        </h1>
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-4xl font-bold">
+              Dashboard
+            </h1>
+
+            <p className="mt-2 text-lg">
+              Welcome, {user?.name}
+            </p>
+          </div>
+
+          <button
+            onClick={handleLogout}
+            className="bg-red-500 text-white px-4 py-2 rounded-lg"
+          >
+            Logout
+          </button>
+        </div>
 
         <div className="grid md:grid-cols-3 gap-6">
 

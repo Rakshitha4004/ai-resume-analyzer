@@ -1,6 +1,9 @@
 import Navbar from "../components/Navbar";
 
 function Report() {
+  const atsScore =
+    localStorage.getItem("atsScore") || 0;
+
   return (
     <>
       <Navbar />
@@ -14,7 +17,7 @@ function Report() {
         <div className="bg-white p-6 rounded-xl shadow">
 
           <h2 className="text-2xl font-bold text-blue-600">
-            ATS Score: 78/100
+            ATS Score: {atsScore}/100
           </h2>
 
           <div className="mt-6">

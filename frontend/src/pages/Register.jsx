@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
 function Register() {
@@ -6,19 +7,25 @@ function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const navigate = useNavigate();
+
   const handleRegister = () => {
     if (!name || !email || !password) {
       alert("Please fill all fields");
       return;
     }
 
-    alert("Account Created Successfully!");
-
-    console.log({
+    const user = {
       name,
       email,
       password,
-    });
+    };
+
+    localStorage.setItem("user", JSON.stringify(user));
+
+    alert("Account Created Successfully!");
+
+    navigate("/login");
   };
 
   return (
@@ -27,7 +34,6 @@ function Register() {
 
       <div className="min-h-screen bg-gray-100 flex justify-center items-center">
         <div className="bg-white p-8 rounded-xl shadow-lg w-96">
-
           <h2 className="text-3xl font-bold text-center mb-6">
             Register
           </h2>
@@ -58,11 +64,10 @@ function Register() {
 
           <button
             onClick={handleRegister}
-            className="w-full bg-blue-600 text-white p-3 rounded-lg"
+            className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700"
           >
             Create Account
           </button>
-
         </div>
       </div>
     </>
