@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../Components/Navbar";
+import Navbar from "../components/Navbar";
 import { roleSkills } from "../data/skills";
-import { extractTextFromPDF } from "../Utils/pdfExtractor";
+import { extractTextFromPDF } from "../utils/pdfExtractor";
 
 function UploadResume() {
   const [file, setFile] = useState(null);
