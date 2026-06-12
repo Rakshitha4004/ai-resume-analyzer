@@ -3,13 +3,13 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { roleSkills } from "../data/skills";
 import { extractTextFromPDF } from "../utils/pdfExtractor";
+import { generateResumeFeedback } from "../services/geminiService";
 
 function UploadResume() {
   const [file, setFile] = useState(null);
   const [jobDescription, setJobDescription] = useState("");
-  const [selectedRole, setSelectedRole] = useState(
-    "Software Developer"
-  );
+  const [selectedRole, setSelectedRole] =
+    useState("Software Developer");
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -32,10 +32,35 @@ function UploadResume() {
     setLoading(true);
 
     try {
-      const skills = roleSkills[selectedRole];
+      const skills =
+        roleSkills[selectedRole] || [];
 
       const resumeText =
         await extractTextFromPDF(file);
+
+      let aiFeedback = "";
+
+      try {
+        aiFeedback =
+          await generateResumeFeedback(
+            resumeText,
+            jobDescription,
+            selectedRole
+          );
+      } catch (error) {
+        console.error(
+          "Gemini Error:",
+          error
+        );
+
+        aiFeedback =
+          "AI feedback is currently unavailable.";
+      }
+
+      localStorage.setItem(
+        "aiFeedback",
+        aiFeedback
+      );
 
       const jdText =
         jobDescription.toLowerCase();
@@ -77,6 +102,34 @@ function UploadResume() {
         Math.round(skillMatchScore)
       );
 
+      const feedback = [];
+
+      if (atsScore >= 80) {
+        feedback.push(
+          "Excellent ATS match for this role."
+        );
+      } else if (atsScore >= 60) {
+        feedback.push(
+          "Good ATS score. Adding more relevant skills can improve your chances."
+        );
+      } else {
+        feedback.push(
+          "ATS score is low. Consider tailoring your resume to the job description."
+        );
+      }
+
+      if (missingSkills.length > 0) {
+        feedback.push(
+          `Consider adding these skills if applicable: ${missingSkills.join(", ")}`
+        );
+      }
+
+      if (matchedSkills.length > 0) {
+        feedback.push(
+          `Strong skills identified: ${matchedSkills.join(", ")}`
+        );
+      }
+
       const previousAnalyses =
         JSON.parse(
           localStorage.getItem("analyses")
@@ -94,7 +147,9 @@ function UploadResume() {
           new Date().toLocaleDateString(),
       };
 
-      previousAnalyses.push(newAnalysis);
+      previousAnalyses.push(
+        newAnalysis
+      );
 
       localStorage.setItem(
         "analyses",
@@ -122,6 +177,11 @@ function UploadResume() {
       );
 
       localStorage.setItem(
+        "feedback",
+        JSON.stringify(feedback)
+      );
+
+      localStorage.setItem(
         "selectedRole",
         selectedRole
       );
@@ -137,17 +197,16 @@ function UploadResume() {
       );
 
       localStorage.setItem(
-        "totalResumes",
-        previousAnalyses.length
-      );
-
-      localStorage.setItem(
         "analysisCount",
         previousAnalyses.length
       );
 
-      navigate("/report");
+      localStorage.setItem(
+        "totalResumes",
+        previousAnalyses.length
+      );
 
+      navigate("/report");
     } catch (error) {
       console.error(error);
 
@@ -186,7 +245,9 @@ function UploadResume() {
           <select
             value={selectedRole}
             onChange={(e) =>
-              setSelectedRole(e.target.value)
+              setSelectedRole(
+                e.target.value
+              )
             }
             className="w-full border p-3 rounded-lg mt-4"
           >
@@ -230,3 +291,4 @@ function UploadResume() {
 }
 
 export default UploadResume;
+

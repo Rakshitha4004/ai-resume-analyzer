@@ -2,28 +2,24 @@ import Navbar from "../components/Navbar";
 import { Link } from "react-router-dom";
 
 function Dashboard() {
-  const user = JSON.parse(
-    localStorage.getItem("user") || "{}"
-  );
-
-  const totalResumes =
-    localStorage.getItem("totalResumes") || 0;
-
-  const analysisCount =
-    localStorage.getItem("analysisCount") || 0;
-
-  const atsScore =
-    localStorage.getItem("atsScore") || 0;
-
   const analyses =
     JSON.parse(
       localStorage.getItem("analyses")
     ) || [];
 
-  const handleLogout = () => {
-    localStorage.removeItem("loggedIn");
-    window.location.href = "/login";
-  };
+  const totalAnalyses =
+    analyses.length;
+
+  const averageScore =
+    analyses.length > 0
+      ? Math.round(
+          analyses.reduce(
+            (sum, item) =>
+              sum + item.atsScore,
+            0
+          ) / analyses.length
+        )
+      : 0;
 
   return (
     <>
@@ -31,129 +27,145 @@ function Dashboard() {
 
       <div className="min-h-screen bg-gray-100 p-8">
 
-        <div className="flex justify-between items-center mb-8">
+        <h1 className="text-4xl font-bold mb-8">
+          Dashboard
+        </h1>
 
-          <div>
-            <h1 className="text-4xl font-bold">
-              Dashboard
-            </h1>
-
-            <p className="mt-2 text-lg text-gray-600">
-              Welcome, {user?.name}
-            </p>
-          </div>
-
-          <button
-            onClick={handleLogout}
-            className="bg-red-500 text-white px-4 py-2 rounded-lg"
-          >
-            Logout
-          </button>
-
-        </div>
-
-        <div className="flex gap-4 mb-8">
-
-          <Link
-            to="/upload"
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg"
-          >
-            Upload Resume
-          </Link>
-
-          <Link
-            to="/report"
-            className="bg-green-600 text-white px-6 py-3 rounded-lg"
-          >
-            View Report
-          </Link>
-
-        </div>
-
-        <div className="bg-white p-6 rounded-xl shadow mb-8">
-
-          <h2 className="text-2xl font-bold mb-4">
-            User Profile
-          </h2>
-
-          <p>
-            <strong>Name:</strong> {user?.name}
-          </p>
-
-          <p>
-            <strong>Email:</strong> {user?.email}
-          </p>
-
-          <p>
-            <strong>Status:</strong> Active
-          </p>
-
-        </div>
+        {/* Stats */}
 
         <div className="grid md:grid-cols-3 gap-6">
 
           <div className="bg-white p-6 rounded-xl shadow">
-            <h2 className="text-xl font-semibold">
-              Total Resumes
+            <h2 className="text-lg font-semibold">
+              Total Analyses
             </h2>
 
-            <p className="text-3xl mt-4 text-blue-600">
-              {totalResumes}
+            <p className="text-3xl font-bold text-blue-600 mt-2">
+              {totalAnalyses}
             </p>
           </div>
 
           <div className="bg-white p-6 rounded-xl shadow">
-            <h2 className="text-xl font-semibold">
-              Analyses Completed
+            <h2 className="text-lg font-semibold">
+              Average ATS Score
             </h2>
 
-            <p className="text-3xl mt-4 text-green-600">
-              {analysisCount}
+            <p className="text-3xl font-bold text-green-600 mt-2">
+              {averageScore}%
             </p>
           </div>
 
           <div className="bg-white p-6 rounded-xl shadow">
-            <h2 className="text-xl font-semibold">
-              Latest ATS Score
+            <h2 className="text-lg font-semibold">
+              Latest Role
             </h2>
 
-            <p className="text-3xl mt-4 text-purple-600">
-              {atsScore}
+            <p className="text-xl font-bold text-purple-600 mt-2">
+              {analyses.length > 0
+                ? analyses[
+                    analyses.length - 1
+                  ].role
+                : "N/A"}
             </p>
           </div>
 
         </div>
 
+        {/* Upload Button */}
+
+        <div className="mt-8">
+          <Link
+            to="/upload"
+            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
+          >
+            Analyze New Resume
+          </Link>
+        </div>
+
+        {/* History */}
+
         <div className="bg-white p-6 rounded-xl shadow mt-8">
 
           <h2 className="text-2xl font-bold mb-4">
-            Resume History
+            Analysis History
           </h2>
 
           {analyses.length === 0 ? (
-            <p>No resumes analyzed yet.</p>
+            <p>
+              No resume analyses found.
+            </p>
           ) : (
-            analyses.map((analysis, index) => (
-              <div
-                key={index}
-                className="border-b py-3"
-              >
-                <p>
-                  <strong>Resume:</strong>{" "}
-                  {analysis.resumeName}
-                </p>
+            <div className="overflow-x-auto">
 
-                <p>
-                  <strong>ATS Score:</strong>{" "}
-                  {analysis.atsScore}
-                </p>
+              <table className="w-full border-collapse">
 
-                <p>
-                  <strong>Date:</strong>{" "}
-                  {analysis.date}
-                </p>
-              </div>
-            ))
+                <thead>
+                  <tr className="bg-gray-200">
+
+                    <th className="p-3 text-left">
+                      Resume
+                    </th>
+
+                    <th className="p-3 text-left">
+                      Role
+                    </th>
+
+                    <th className="p-3 text-left">
+                      ATS Score
+                    </th>
+
+                    <th className="p-3 text-left">
+                      Date
+                    </th>
+
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {analyses
+                    .slice()
+                    .reverse()
+                    .map(
+                      (
+                        analysis,
+                        index
+                      ) => (
+                        <tr
+                          key={index}
+                          className="border-b"
+                        >
+                          <td className="p-3">
+                            {
+                              analysis.resumeName
+                            }
+                          </td>
+
+                          <td className="p-3">
+                            {
+                              analysis.role
+                            }
+                          </td>
+
+                          <td className="p-3">
+                            {
+                              analysis.atsScore
+                            }
+                            %
+                          </td>
+
+                          <td className="p-3">
+                            {
+                              analysis.date
+                            }
+                          </td>
+                        </tr>
+                      )
+                    )}
+                </tbody>
+
+              </table>
+
+            </div>
           )}
 
         </div>
