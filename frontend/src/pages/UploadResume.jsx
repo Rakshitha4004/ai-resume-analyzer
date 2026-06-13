@@ -1,9 +1,9 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { roleSkills } from "../data/skills";
 import { extractTextFromPDF } from "../utils/pdfExtractor";
-import { generateResumeFeedback } from "../services/geminiService";
 
 function UploadResume() {
   const [file, setFile] = useState(null);
@@ -37,30 +37,6 @@ function UploadResume() {
 
       const resumeText =
         await extractTextFromPDF(file);
-
-      let aiFeedback = "";
-
-      try {
-        aiFeedback =
-          await generateResumeFeedback(
-            resumeText,
-            jobDescription,
-            selectedRole
-          );
-      } catch (geminiError) {
-        console.error(
-          "Gemini Error:",
-          geminiError
-        );
-
-        aiFeedback =
-          "AI feedback is currently unavailable.";
-      }
-
-      localStorage.setItem(
-        "aiFeedback",
-        aiFeedback
-      );
 
       const jdText =
         jobDescription.toLowerCase();
@@ -100,6 +76,57 @@ function UploadResume() {
       const atsScore = Math.min(
         100,
         Math.round(skillMatchScore)
+      );
+
+      const aiFeedback = `ATS Analysis:
+ATS Score: ${atsScore}%
+
+Role:
+${selectedRole}
+
+Strengths:
+${
+  matchedSkills.length > 0
+    ? matchedSkills
+        .map((skill) => `• ${skill}`)
+        .join("\n")
+    : "• No matching skills found"
+}
+
+Weaknesses:
+${
+  missingSkills.length > 0
+    ? missingSkills
+        .map(
+          (skill) =>
+            `• Missing ${skill}`
+        )
+        .join("\n")
+    : "• No major weaknesses detected"
+}
+
+Recommendations:
+${
+  missingSkills.length > 0
+    ? `Add experience, projects, certifications, or coursework related to: ${missingSkills.join(
+        ", "
+      )}`
+    : "Resume is well aligned with the job description."
+}
+
+Final Verdict:
+${
+  atsScore >= 80
+    ? "Excellent match for the role."
+    : atsScore >= 60
+    ? "Good match, but improvements are recommended."
+    : "Resume needs improvement before applying."
+}
+`;
+
+      localStorage.setItem(
+        "aiFeedback",
+        aiFeedback
       );
 
       const feedback = [];
@@ -196,22 +223,9 @@ function UploadResume() {
         file.name
       );
 
-      localStorage.setItem(
-        "analysisCount",
-        previousAnalyses.length
-      );
-
-      localStorage.setItem(
-        "totalResumes",
-        previousAnalyses.length
-      );
-
       navigate("/report");
     } catch (error) {
-      console.error(
-        "FULL ERROR:",
-        error
-      );
+      console.error(error);
 
       alert(
         error?.message ||
@@ -293,3 +307,4 @@ function UploadResume() {
 }
 
 export default UploadResume;
+
