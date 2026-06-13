@@ -47,10 +47,10 @@ function UploadResume() {
             jobDescription,
             selectedRole
           );
-      } catch (error) {
+      } catch (geminiError) {
         console.error(
           "Gemini Error:",
-          error
+          geminiError
         );
 
         aiFeedback =
@@ -208,10 +208,14 @@ function UploadResume() {
 
       navigate("/report");
     } catch (error) {
-      console.error(error);
+      console.error(
+        "FULL ERROR:",
+        error
+      );
 
       alert(
-        "Error reading PDF. Please upload a valid PDF file."
+        error?.message ||
+          "Error reading PDF."
       );
     }
 
@@ -224,7 +228,6 @@ function UploadResume() {
 
       <div className="min-h-screen bg-gray-100 flex justify-center items-center p-6">
         <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-3xl">
-
           <h1 className="text-3xl font-bold mb-6">
             Upload Resume
           </h1>
@@ -283,7 +286,6 @@ function UploadResume() {
               ? "Analyzing Resume..."
               : "Analyze Resume"}
           </button>
-
         </div>
       </div>
     </>
@@ -291,4 +293,3 @@ function UploadResume() {
 }
 
 export default UploadResume;
-

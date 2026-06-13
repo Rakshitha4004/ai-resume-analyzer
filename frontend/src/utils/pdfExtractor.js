@@ -1,30 +1,42 @@
 import * as pdfjsLib from "pdfjs-dist";
 import pdfjsWorker from "pdfjs-dist/build/pdf.worker?url";
 
-pdfjsLib.GlobalWorkerOptions.workerSrc =
-  pdfjsWorker;
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 export async function extractTextFromPDF(file) {
-  const arrayBuffer = await file.arrayBuffer();
+  try {
+    console.log("Reading PDF:", file.name);
 
-  const pdf = await pdfjsLib.getDocument({
-    data: arrayBuffer,
-  }).promise;
+    const arrayBuffer = await file.arrayBuffer();
 
-  let text = "";
+    const pdf = await pdfjsLib.getDocument({
+      data: arrayBuffer,
+    }).promise;
 
-  for (let i = 1; i <= pdf.numPages; i++) {
-    const page = await pdf.getPage(i);
+    console.log("Pages:", pdf.numPages);
 
-    const content =
-      await page.getTextContent();
+    let text = "";
 
-    const pageText = content.items
-      .map((item) => item.str)
-      .join(" ");
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
 
-    text += pageText + " ";
+      const content =
+        await page.getTextContent();
+
+      const pageText = content.items
+        .map((item) => item.str)
+        .join(" ");
+
+      text += pageText + " ";
+    }
+
+    return text.toLowerCase();
+  } catch (error) {
+    console.error(
+      "PDF Extract Error:",
+      error
+    );
+
+    throw error;
   }
-
-  return text.toLowerCase();
 }
